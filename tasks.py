@@ -6,7 +6,7 @@ class Student:
         self.finished_courses = []
         self.courses_in_progress = []
         self.grades = {}
- 
+        
     def add_courses(self, course_name):
         self.finished_courses.append(course_name) 
 
@@ -18,17 +18,49 @@ class Student:
                 lecturer.grades[course] = [grade]
         else:
             return 'Ошибка'
+        
+    def average_rating(self):
+        all_grades = []
+        for  grade in self.grades.values():
+            all_grades += grade
+        return sum(all_grades)/len(all_grades) if all_grades else 0
+    
+        
+    def __lt__(self, other): 
+        return self.average_rating() < other.average_rating()
+
+
+    def __str__(self):
+        average_grade = self.average_rating()
+        return f'Имя: {self.name} \nФамилия: {self.surname} \n' \
+               f'Средняя оценка за домашние задания: {average_grade} \n' \
+               f'Курсы в процессе изучения: {", ".join(self.courses_in_progress)} \n'\
+               f'Завершенные курсы: {", ".join(self.finished_courses)}'
      
 class Mentor:
     def __init__(self, name, surname):
         self.name = name
         self.surname = surname
         self.courses_attached = []
-
+    
 class Lecturer(Mentor):
     def __init__(self, name, surname):
         super().__init__(name, surname)
         self.grades = {}
+
+    def average_rating(self):
+        all_grades = []
+        for  grade in self.grades.values():
+            all_grades += grade
+        return sum(all_grades)/len(all_grades) if all_grades else 0
+
+    
+    def __lt__(self, some_lecturer2):
+        return self.average_rating() < some_lecturer2.average_rating()
+
+    def __str__(self):
+        average_grade = self.average_rating()
+        return f'Имя: {self.name} \nФамилия: {self.surname} \nСредняя оценка за лекции: {average_grade}' 
 
 class Reviewer(Mentor):
     def __init__(self, name, surname):
@@ -42,24 +74,49 @@ class Reviewer(Mentor):
                 student.grades[course] = [grade]
         else:
             return 'Ошибка'
+        
+    def __str__(self):
+        return f'Имя: {self.name} \nФамилия: {self.surname}'
 
-best_student = Student('Ruoy', 'Eman', 'your_gender')
-best_student.courses_in_progress += ['Python']
+some_student = Student('Ruoy', 'Eman', 'your_gender')
+some_student.courses_in_progress += ['Python', 'Git']
+some_student.add_courses('Введение в программирование')
+
+some_student2 = Student('Milya', 'Shigap', 'your_gender')
+some_student2.courses_in_progress += ['Python', 'Git']
+some_student2.add_courses('Введение в программирование')
+
+some_reviewer = Reviewer('Some', 'Buddy')
+some_reviewer.courses_attached += ['Python', 'Git']
+
+some_lecturer = Lecturer('Some', 'Buddy')
+some_lecturer.courses_attached += ['Python']
+
+some_lecturer2 = Lecturer('Some2', 'Buddy2')
+some_lecturer2.courses_attached += ['Python']
  
-reviewer = Reviewer('Some', 'Buddy')
-reviewer.courses_attached += ['Python']
+some_reviewer.StudentsGrades(some_student, 'Python', 10)
+some_reviewer.StudentsGrades(some_student, 'Git', 9.8)
 
-lecturer = Lecturer('Some', 'Buddy')
-lecturer.courses_attached += ['Python']
- 
-reviewer.StudentsGrades(best_student, 'Python', 10)
-reviewer.StudentsGrades(best_student, 'Python', 10)
-reviewer.StudentsGrades(best_student, 'Python', 10)
+some_reviewer.StudentsGrades(some_student2, 'Python', 10)
+some_reviewer.StudentsGrades(some_student2, 'Python', 9.9)
 
-best_student.LecturersGrades(lecturer, 'Python', 10)
-best_student.LecturersGrades(lecturer, 'Python', 10)
-best_student.LecturersGrades(lecturer, 'Python', 9.9)
+some_student.LecturersGrades(some_lecturer, 'Python', 10)
+some_student.LecturersGrades(some_lecturer, 'Python', 9.8)
 
- 
-print(best_student.grades)
-print(lecturer.grades)
+some_student.LecturersGrades(some_lecturer2, 'Python', 10)
+some_student.LecturersGrades(some_lecturer2, 'Python', 9.7)
+
+if (some_lecturer.__lt__(some_lecturer2)):
+    print(some_lecturer2.name, some_lecturer2.surname)
+else:
+    print(some_lecturer.name, some_lecturer.surname)
+
+if (some_student.__lt__(some_student2)):
+    print(some_student2.name, some_student2.surname)
+else:
+    print(some_student.name, some_student.surname) 
+    
+print(some_reviewer)
+print(some_lecturer)
+print(some_student)
